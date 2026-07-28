@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 import pytest
 from sklearn.pipeline import Pipeline
@@ -5,6 +6,8 @@ from sklearn.pipeline import Pipeline
 from indoreview.model import (
     LABEL_ORDER,
     build_classical_model,
+    load_classical_model,
+    save_classical_model,
     train_classical_model,
 )
 
@@ -97,4 +100,64 @@ def test_training_rejects_missing_labels() -> None:
     ):
         train_classical_model(
             incomplete_dataframe
+        )
+
+def test_save_and_load_classical_model(
+    tmp_path: Path,
+) -> None:
+    training_dataframe = (
+        create_training_dataframe()
+    )
+
+    trained_model = train_classical_model(
+        training_dataframe
+    )
+
+    model_path = (
+        tmp_path / "classical_model.joblib"
+    )
+
+    saved_path = save_classical_model(
+        trained_model,
+        model_path,
+    )
+
+    loaded_model = load_classical_model(
+        model_path
+    )
+
+    example_texts = [
+        "produk bagus",
+        "produk buruk",
+        "produk biasa",
+    ]
+
+    original_predictions = (
+        trained_model.predict(example_texts)
+    )
+    loaded_predictions = (
+        loaded_model.predict(example_texts)
+    )
+
+    assert saved_path == model_path
+    assert model_path.is_file()
+    assert (
+        loaded_predictions.tolist()
+        == original_predictions.tolist()
+    )
+
+
+def test_load_rejects_missing_model(
+    tmp_path: Path,
+) -> None:
+    missing_model_path = (
+        tmp_path / "missing.joblib"
+    )
+
+    with pytest.raises(
+        FileNotFoundError,
+        match="Model file not found",
+    ):
+        load_classical_model(
+            missing_model_path
         )

@@ -1,5 +1,8 @@
 """Reusable classical sentiment model."""
 
+from pathlib import Path
+
+import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -70,5 +73,42 @@ def train_classical_model(
         training_dataframe["text"],
         training_dataframe["label"],
     )
+
+    return model
+
+def save_classical_model(
+    model: Pipeline,
+    model_path: Path,
+) -> Path:
+    """Save a trained model to disk."""
+    model_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    joblib.dump(
+        model,
+        model_path,
+    )
+
+    return model_path
+
+
+def load_classical_model(
+    model_path: Path,
+) -> Pipeline:
+    """Load a trained model from disk."""
+    if not model_path.is_file():
+        raise FileNotFoundError(
+            f"Model file not found: {model_path}"
+        )
+
+    model = joblib.load(model_path)
+
+    if not isinstance(model, Pipeline):
+        raise TypeError(
+            "The loaded artifact is not "
+            "a scikit-learn Pipeline."
+        )
 
     return model
