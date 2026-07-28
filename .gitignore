@@ -23,3 +23,11 @@ models/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Python package metadata
+*.egg-info/
+build/
+dist/
+
+# Test artifacts
+.pytest_cache/

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "indoreview-intelligence"
+version = "0.1.0"
+description = "An end-to-end Indonesian sentiment analysis system."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "numpy>=2.0,<3.0",
+    "pandas>=2.2,<4.0",
+    "scikit-learn>=1.6,<2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
